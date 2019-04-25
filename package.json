@@ -1,0 +1,25 @@
+{
+  "name": "passbackend",
+  "version": "1.0.0",
+  "description": "Backend for passmein",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "PassBack"
+  },
+  "keywords": [
+    "backend",
+    "node",
+    "express"
+  ],
+  "author": "RSHBSXN",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.16.4",
+    "http": "0.0.0",
+    "mongoose": "^5.5.4"
+  }
+}
