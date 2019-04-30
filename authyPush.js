@@ -1,0 +1,40 @@
+const authy = require("authy")(process.env.APIKEY)
+// app.get("/request",(req,res)=>{
+//     res.render("req");
+// });
+// app.get("/status/:uuid",(req,res)=>{
+//     authy.check_approval_status(req.params.uuid,(err,resp)=>{
+//         if(err)
+//             res.send(err);
+//         else
+//             res.send(resp);
+//     });
+// });
+// app.post("/request",(req,res)=>{
+//     authy.send_approval_request(AUTH_ID[req.body.em],{message:"DONE"},"","",(err,resp)=>{
+//         if(err){
+//             console.log(err);
+//             res.send(err);
+//         }
+//         else{
+//             console.log(resp);
+//             res.send(resp);
+//         }
+//     });
+// });
+// app.get("/register",(req,res)=>{
+//     res.render("reg");
+// });
+// app.post("/register",(req,res) => {
+//     authy.register_user(req.body.em,req.body.number,"+91",true,(err,resp)=>{
+//         if(err){
+//             console.log(err);
+//             res.send(err);
+//         }
+//         else{
+//             console.log(resp);
+
+//             res.send(resp);
+//         }
+//     })
+// });
