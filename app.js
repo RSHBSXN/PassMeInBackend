@@ -25,6 +25,14 @@ async function findByEm(em){
 async function findByNum(num){
     return await User.findOne({number:num});
 }
+async function createUser(email,number,authId){
+    const user = new User({
+        email:email,
+        number:number,
+        authId:authId
+    });
+    await user.save();
+}
 //Finally include authy for push notification.
 const authy = require("authy")(process.env.APIKEY);
 //Routes Here
@@ -54,6 +62,19 @@ app.post("/login",async (req,res)=>{
             }
         });//ek bar await hata ke dkehte h
     }
+});
+app.post("/register",async (req,res)=>{
+    const email = req.body["email"];
+    const phone = req.body["phone"];
+    authy.register_user(email,phone,"+91",true,(err,resp)=>{
+        if(err)
+            app.send(err);
+        else{
+            await createUser(email,phone,resp.user.id);
+            app.send(resp);
+
+        }
+    });
 });
 //port listening here
 app.listen(port,console.log("listening at port",port));
