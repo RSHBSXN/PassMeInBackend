@@ -1,10 +1,9 @@
 require("dotenv").config();
-//Database connection and importing both models
+const cors =  require("cors");
 const port = process.env.PORT;
+//Database connection and importing both models
 require("./database/connectMongoose");
 const User = require("./database/Schema/userSchema");
-const cors =  require("cors");
-
 //const Card = require("./database/Schema/cardSchema");
 
 //include express for routing purposes
@@ -34,6 +33,7 @@ async function createUser(email,number,authId){
 }
 //Finally include authy for push notification.
 const authy = require("authy")(process.env.API_KEY);
+
 //Routes Here
 app.post("/login",async (req,res)=>{
     let number = req.body["phone"];
@@ -80,4 +80,5 @@ app.post("/register",async (req,res)=>{
         }
     });
 });
-app.listen(port,console.log("listening at port",port));
+
+app.listen(port,console.log("listening at port:",port));
