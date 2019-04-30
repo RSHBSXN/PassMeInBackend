@@ -1,6 +1,5 @@
-
+require("dotenv").config();
 //Database connection and importing both models
-
 const port = process.env.PORT;
 require("./database/connectMongoose");
 const User = require("./database/Schema/userSchema");
@@ -34,21 +33,26 @@ async function createUser(email,number,authId){
     await user.save();
 }
 //Finally include authy for push notification.
-const authy = require("authy")(process.env.APIKEY);
+const authy = require("authy")(process.env.API_KEY);
 //Routes Here
 app.post("/login",async (req,res)=>{
-    
-    let number = req.body.phone;
-    // let email = req.body['email'];
+    let number = req.body["phone"];
+    let email = req.body['email'];
     let result = {};
-    result = await findByNum(number);
+    console.log(number,email)
+    if(number != null){
+        result = await findByNum(number);
+    }
+    else if(email != null){
+        result = await findByEm(email);
+    }
     console.log(result)
     if(!result)
         res.send({status:"user not found"});
     else{
         authy.send_approval_request(result.authId,{message:"click on approve to login"},"","",async(err,resp)=>{
             if(err)
-                res.status(404).send({"success":false,"message":"Kuch gdbd hai"})
+                res.status(404).send(err)
             else{
                 let uuid = resp.approval_request.uuid;
                 await setTimeout(()=>{
@@ -68,13 +72,12 @@ app.post("/register",async (req,res)=>{
     const phone = req.body["phone"];
     authy.register_user(email,phone,"+91",true,(err,resp)=>{
         if(err)
-            app.send(err);
+            res.send(err);
         else{
-            await createUser(email,phone,resp.user.id);
-            app.send(resp);
-
+            createUser(email,phone,resp.user.id);
+            disp();
+            res.send(resp);
         }
     });
 });
-//port listening here
 app.listen(port,console.log("listening at port",port));
