@@ -1,4 +1,6 @@
+
 require("dotenv").config();
+const jwt = require("jsonwebtoken");
 const cors =  require("cors");
 const port = process.env.PORT;
 //Database connection and importing both models
@@ -9,11 +11,12 @@ const Card = require("./database/Schema/cardSchema");
 //include express for routing purposes
 const express = require("express");
 const app = express();
-app.use(cors({credentials:true,origin:true}))
+app.use(cors({credentials:true,origin:true}));
 app.set("view engine","pug");
 app.set("views","./views");
 app.use(express.urlencoded({extended:false}));
 app.use(express.json());
+
 async function registerUser(req,res){
     const email = req.body["email"];
     const phone = req.body["phone"];
@@ -58,10 +61,12 @@ async function loginUser(req,res){
                     authy.check_approval_status(uuid,(err,resp)=>{
                     if(err)
                         res.status(500).send({status:false,message:"Kuch gdbd hai"})
-                    else
-                        res.status(200).send({status:true,message:resp.approval_request.status})
+                    else{
+                        const token = jwt.sign({id:result._id},process.env.JWT_PRIVATE_KEY);
+                        res.status(200).send({status:true,message:resp.approval_request.status,token:token});
+                    }
                     })
-                },30000);
+                },20000);
             }
         });
     }
@@ -71,5 +76,5 @@ const authy = require("authy")(process.env.API_KEY);
 //Routes Here
 app.post("/login",loginUser);
 app.post("/register",registerUser);
-
+User.display();
 app.listen(port,console.log("listening at port:",port));

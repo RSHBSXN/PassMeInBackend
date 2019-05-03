@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const userSchema = new mongoose.Schema({
+    name:String,
     email:String,
     idForn:String,
     number:String,
@@ -24,8 +25,9 @@ class User{
             return e;
         }
     }
-    static async createUser(email,number,authId){
+    static async createUser(name,email,number,authId){
         const user = new this.model({
+            name:name,
             email:email,
             number:number,
             authId:authId
@@ -40,6 +42,7 @@ class User{
     }
     static async display(){
         console.log(await this.model.find());
+        // await this.model.find();
     }
 }
 User.model = mongoose.model("User",userSchema);
