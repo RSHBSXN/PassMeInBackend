@@ -20,7 +20,7 @@ app.use(express.json());
 async function registerUser(req,res){
     const email = req.body["email"];
     const phone = req.body["phone"];
-    let resp = responseCode;
+    console.log(email,phone);
     if(!await User.findByEmail(email) && !await User.findByNumber(phone)){
         authy.register_user(email,phone,process.env.COUNTRY_CODE,true,async(err,resp)=>{
             if(err){
@@ -62,9 +62,13 @@ async function loginUser(req,res){
                     if(err)
                         res.status(500).send({status:false,message:"Kuch gdbd hai"})
                     else{
-                        const token = jwt.sign({id:result._id},process.env.JWT_PRIVATE_KEY);
-                        res.status(200).send({status:true,message:resp.approval_request.status,token:token});
-                    }
+                        if(resp.approval_request.status == "approved"){
+                            token = jwt.sign({id:result._id},process.env.JWT_PRIVATE_KEY);
+                            res.status(200).send({status:true,message:resp.approval_request.status,token:token});
+                        }
+                        else
+                            res.status(200).send({status:true,message:resp.approval_request.status})
+                        }
                     })
                 },20000);
             }
