@@ -24,9 +24,8 @@ class User{
             return e;
         }
     }
-    static async createUser(name,email,number,authId){
+    static async createUser(email,number,authId){
         const user = new this.model({
-            name:name,
             email:email,
             number:number,
             authId:authId

@@ -1,6 +1,6 @@
-
 require("dotenv").config();
 const jwt = require("jsonwebtoken");
+const checkAuth = require("./middlewares/jwt");
 const cors =  require("cors");
 const port = process.env.PORT;
 //Database connection and importing both models
@@ -25,16 +25,16 @@ async function registerUser(req,res){
         authy.register_user(email,phone,process.env.COUNTRY_CODE,true,async(err,resp)=>{
             if(err){
                 resp.message = err;
-                res.send({status:false,message:err});
+                res.status(500).send({status:false,message:err});
             }
             else{
                 const result = await User.createUser(email,phone,resp.user.id);
-                res.send({status:true,message:result});
+                res.send({status:"1000",message:result});
             }
         });
     }
     else{
-        res.send({status:false,message:'user already exists'});
+        res.send({status:"1002",message:'user already exists'});
     }
 }
 async function loginUser(req,res){
@@ -80,5 +80,31 @@ const authy = require("authy")(process.env.API_KEY);
 //Routes Here
 app.post("/login",loginUser);
 app.post("/register",registerUser);
-User.display();
+app.use("/card",checkAuth);
+
+app.post("/card/:type",async(req,res)=>{
+    const uid = jwt.verify(req.header("authorization"),process.env.JWT_PRIVATE_KEY);
+    const type = req.params.type
+    switch(type){
+        case 'fetch':
+            res.send(await Card.findAllCards(uid.id));
+            break;
+        case 'add':
+            if(req.body['url'] && req.body['email'] && req.body['password'] && req.body['domain'])
+                res.send(await Card.addCard(uid.id,req.body['url'],req.body['email'],req.body['password'],req.body['domain']));
+            else
+                res.send({status:"Incomplete fields"});
+            break;
+        case 'update':
+            res.send(await Card.updateCard(req.body["id"],req.body['card']));
+            break;
+        case 'deletecard':
+            res.send(await Card.deleteCard(req.body['id']));
+            break;
+        default:
+            res.status(404).send("NOT FOUND");
+    }
+})
+//User.display();
+//Card.display();
 app.listen(port,console.log("listening at port:",port));

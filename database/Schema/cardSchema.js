@@ -8,45 +8,37 @@ let cardSchema = new mongoose.Schema({
 });
 class Card{
     //CRUD ON CARDS
-    async addCard(uid,url,email,pass,dom){
-        let card = new Card({
+    static async addCard(uid,url,email,pass,dom){
+        let card = new this.model({
             uid:uid,
             url:url,
             email:email,
             password:pass,
             domainName:dom
         });
-        try{
-            const result = await card.save();
-            return result;
-        }
-        catch(e){
-            return e;
-        }
+        const result = await card.save();
+        return result;
     }
-    async findAllCards(uid){
-        try{
-            const result = await this.model.find({uid:uid});
-            return result;
-        }
-        catch(e){
-            return e;
-        }
+    static async findAllCards(uid){
+        return await this.model.find({uid:uid});
     }
-    async updateCard(id,password){
+    static async updateCard(id,newCard){
         try{
             const result = await this.model.findByIdAndUpdate(id,{
                 $set:{
-                    password:password
+                    url:newCard.url,
+                    email:newCard.email,
+                    password:newCard.password,
+                    domainName:newCard.domainName
                 }
-            },{new:true});
+            });
             return result;
         }
         catch(e){
             return e;
         }
     }
-    async deleteCard(id){
+    static async deleteCard(id){
         try{
             const result = await this.model.findByIdAndRemove(id);
             return result;
@@ -55,5 +47,11 @@ class Card{
             return e;
         }
     }
+    static async display(){
+        console.log(await this.model.find());
+        
+        console.log("CARD");
+    }
 }
 Card.model = new mongoose.model("Card",cardSchema);
+module.exports = Card
