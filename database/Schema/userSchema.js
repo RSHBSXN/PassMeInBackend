@@ -1,7 +1,6 @@
 const mongoose = require("mongoose");
 const userSchema = new mongoose.Schema({
     email:String,
-    idForn:String,
     number:String,
     authId:String
 });
@@ -40,7 +39,6 @@ class User{
     }
     static async display(){
         console.log(await this.model.find());
-        // await this.model.find();
     }
 }
 User.model = mongoose.model("User",userSchema);
